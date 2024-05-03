@@ -1,5 +1,3 @@
-{# templates/movie_detail.html.twig #}
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,6 +15,11 @@
                 <p class="card-text">Director: {{ movie.getDirector() }}</p>
             </div>
         </div>
+
+{% set movieId = movie.id %}
+{% set pageNumber = (movieId / 10) | round(0, 'ceil') %}
+
+<a href="{{ path('movie_list', {'page': pageNumber}) }}" class="btn btn-primary mt-3">Back to Movie List</a>
     </div>
 </body>
 </html>
