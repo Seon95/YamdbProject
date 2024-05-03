@@ -20,12 +20,23 @@ class MovieRepository extends ServiceEntityRepository
 
     public function searchByTitle(string $query): array
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.title LIKE :query')
-            ->setParameter('query', '%' . $query . '%')
-            ->getQuery()
-            ->getResult();
+        $qb = $this->createQueryBuilder('m');
+
+        // If the query is empty, return all movies
+        if (empty($query)) {
+            return $qb->getQuery()->getResult();
+        }
+
+        $qb->andWhere('LOWER(m.title) LIKE :query') // Case-insensitive search
+            ->setParameter('query', '%' . strtolower($query) . '%'); // Convert query to lowercase
+
+        // Debugging: Print the SQL query
+
+        return $qb->getQuery()->getResult();
     }
+
+
+
     //    /**
     public function findPaginated(int $currentPage = 1, int $limit = 10)
     {
