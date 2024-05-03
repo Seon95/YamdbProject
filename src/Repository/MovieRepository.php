@@ -6,6 +6,8 @@ use App\Entity\Movie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
 /**
  * @extends ServiceEntityRepository<Movie>
  */
@@ -25,6 +27,17 @@ class MovieRepository extends ServiceEntityRepository
             ->getResult();
     }
     //    /**
+    public function findPaginated(int $currentPage = 1, int $limit = 10)
+    {
+        $query = $this->createQueryBuilder('m')
+            ->orderBy('m.id', 'ASC')
+            ->getQuery()
+            ->setFirstResult(($currentPage - 1) * $limit)
+            ->setMaxResults($limit);
+
+        return new Paginator($query, true);
+    }
+
     //     * @return Movie[] Returns an array of Movie objects
     //     */
     //    public function findByExampleField($value): array

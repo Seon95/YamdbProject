@@ -9,7 +9,7 @@
         <h1 class="mt-5 mb-4">List of Movies</h1>
         
         {# Search form #}
-        <form action="{{ path('movie_search') }}" method="GET" class="mb-3">
+        <form action="{{ path('movie_list') }}" method="GET" class="mb-3">
             <div class="input-group">
                 <input type="text" name="query" class="form-control" placeholder="Search movies">
                 <div class="input-group-append">
@@ -27,6 +27,25 @@
                 </li>
             {% endfor %}
         </ul>
+        
+        {# Pagination #}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if currentPage == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="{{ path('movie_list', {'page': currentPage - 1}) }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <span class="page-link">{{ currentPage }}</span>
+                </li>
+                <li class="page-item {% if movies|length < limit %}disabled{% endif %}">
+                    <a class="page-link" href="{{ path('movie_list', {'page': currentPage + 1}) }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </body>
 </html>
