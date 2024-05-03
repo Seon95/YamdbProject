@@ -1,0 +1,22 @@
+{# templates/movie_detail.html.twig #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie Detail</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 mb-4">Movie Detail</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ movie.getTitle() }}</h5>
+                <p class="card-text">{{ movie.getDescription() }}</p>
+                <p class="card-text">Year: {{ movie.getYear() }}</p>
+                <p class="card-text">Director: {{ movie.getDirector() }}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

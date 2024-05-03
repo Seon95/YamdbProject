@@ -1,0 +1,19 @@
+{# templates/movies.html.twig #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>List of Movies</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 mb-4">List of Movies</h1>
+        <ul class="list-group">
+            {% for movie in movies %}
+                <li class="list-group-item">{{ movie.getTitle() }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
