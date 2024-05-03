@@ -1,7 +1,7 @@
 <?php
 
 require_once "bootstrap.php";
-require_once "src/Movie.php"; // Include the movie.php file
+require_once __DIR__ . "/src/Entity/Movie.php"; // Include the movie.php file
 
 
 use GuzzleHttp\Client;
