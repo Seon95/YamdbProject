@@ -1,5 +1,10 @@
 controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
-    type: attribute
+  resource:
+    path: ../src/Controller/
+    namespace: App\Controller
+  type: attribute
+
+movie_search:
+  path: /movies/search
+  controller: App\Controller\MovieController::search
+  methods: ["GET"]
