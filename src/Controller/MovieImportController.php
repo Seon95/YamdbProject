@@ -10,18 +10,19 @@ use Symfony\Component\Routing\Annotation\Route;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 
+use App\Repository\MovieRepository;
 
 class MovieImportController extends AbstractController
-
-
 {
-
     private $logger;
+    private $movieRepository;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, MovieRepository $movieRepository)
     {
         $this->logger = $logger;
+        $this->movieRepository = $movieRepository;
     }
+
     #[Route('/import/movies', name: 'import_movies')]
     public function importMovies(EntityManagerInterface $entityManager): Response
     {
@@ -57,28 +58,31 @@ class MovieImportController extends AbstractController
 
                 // Iterate over movie data and add them to the movies array
                 foreach ($data['results'] as $movieData) {
-                    // Create a new Movie entity
-                    $movie = new Movie();
+                    // Check if movie already exists in the database
+                    if (!$this->movieRepository->findOneBy(['title' => $movieData['original_title']])) {
+                        // Create a new Movie entity
+                        $movie = new Movie();
 
-                    // Set movie data
-                    $movie->setTitle($movieData['original_title']);
-                    $movie->setDescription($movieData['overview']);
-                    $movie->setYear(isset($movieData['release_date']) ? date('Y', strtotime($movieData['release_date'])) : null);
-                    $movie->setDirector('Unknown');
+                        // Set movie data
+                        $movie->setTitle($movieData['original_title']);
+                        $movie->setDescription($movieData['overview']);
+                        $movie->setYear(isset($movieData['release_date']) ? date('Y', strtotime($movieData['release_date'])) : null);
+                        $movie->setDirector('Unknown');
 
-                    // Persist the movie entity
-                    $entityManager->persist($movie);
+                        // Persist the movie entity
+                        $entityManager->persist($movie);
 
-                    // Add movie data to the movies array
-                    $movies[] = $movie;
+                        // Add movie data to the movies array
+                        $movies[] = $movie;
 
-                    // Increment the counter
-                    $counter++;
+                        // Increment the counter
+                        $counter++;
 
-                    // Flush the EntityManager every $batchSize iterations
-                    if ($counter % $batchSize === 0) {
-                        $entityManager->flush();
-                        $entityManager->clear(); // Detach all objects from Doctrine's management
+                        // Flush the EntityManager every $batchSize iterations
+                        if ($counter % $batchSize === 0) {
+                            $entityManager->flush();
+                            $entityManager->clear(); // Detach all objects from Doctrine's management
+                        }
                     }
                 }
 
@@ -96,6 +100,13 @@ class MovieImportController extends AbstractController
         } catch (\Exception $e) {
             // Log the error message and stack trace
             $this->logger->error('Error fetching and persisting movies: {error}', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
+            // Check if the error message indicates that movies are already inserted
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
+                // Movies are already inserted, return a response with a message
+                $message = 'No new movies were imported. Movies are already inserted.';
+                return new Response($message);
+            }
 
             // Construct the error response message
             $errorMessage = 'Error fetching and persisting movies: ' . $e->getMessage();
