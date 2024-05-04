@@ -8,14 +8,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use GuzzleHttp\Client;
+use Psr\Log\LoggerInterface;
+
 
 class MovieImportController extends AbstractController
+
+
 {
+
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
     #[Route('/import/movies', name: 'import_movies')]
     public function importMovies(EntityManagerInterface $entityManager): Response
     {
         // Initialize Guzzle client
         $client = new Client();
+
+        $this->logger->info('Importing movies...');
 
         try {
             // Initialize batch size and counter
@@ -81,7 +94,10 @@ class MovieImportController extends AbstractController
 
             return new Response($message);
         } catch (\Exception $e) {
-            // Handle exceptions
+            // Log the error message and stack trace
+            $this->logger->error('Error fetching and persisting movies: {error}', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
+            // Construct the error response message
             $errorMessage = 'Error fetching and persisting movies: ' . $e->getMessage();
             return new Response($errorMessage, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
