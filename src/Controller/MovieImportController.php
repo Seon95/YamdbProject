@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use GuzzleHttp\Client;
+use Symfony\Component\HttpClient\CurlHttpClient;
 use Psr\Log\LoggerInterface;
 
 use App\Repository\MovieRepository;
@@ -26,8 +26,8 @@ class MovieImportController extends AbstractController
     #[Route('/import/movies', name: 'import_movies')]
     public function importMovies(EntityManagerInterface $entityManager): Response
     {
-        // Initialize Guzzle client
-        $client = new Client();
+        // Initialize CurlHttpClient
+        $client = new CurlHttpClient();
 
         $this->logger->info('Importing movies...');
 
@@ -54,7 +54,7 @@ class MovieImportController extends AbstractController
                 ]);
 
                 // Decode the JSON response
-                $data = json_decode($response->getBody(), true);
+                $data = $response->toArray();
 
                 // Iterate over movie data and add them to the movies array
                 foreach ($data['results'] as $movieData) {
