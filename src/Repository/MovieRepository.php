@@ -22,15 +22,13 @@ class MovieRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('m');
 
-        // If the query is empty, return all movies
         if (empty($query)) {
             return $qb->getQuery()->getResult();
         }
 
-        $qb->andWhere('LOWER(m.title) LIKE :query') // Case-insensitive search
-            ->setParameter('query', '%' . strtolower($query) . '%'); // Convert query to lowercase
+        $qb->andWhere('LOWER(m.title) LIKE :query')
+            ->setParameter('query', '%' . strtolower($query) . '%');
 
-        // Debugging: Print the SQL query
 
         return $qb->getQuery()->getResult();
     }
