@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpClient\CurlHttpClient;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Dotenv\Dotenv;
+
 
 use App\Repository\MovieRepository;
 
@@ -26,6 +28,9 @@ class MovieImportController extends AbstractController
     #[Route('/import/movies', name: 'import_movies')]
     public function importMovies(EntityManagerInterface $entityManager): Response
     {
+        // Retrieve API key from .env
+        $apiKey = $_ENV['API_KEY'];
+        var_dump($apiKey);
         // Initialize CurlHttpClient
         $client = new CurlHttpClient();
 
@@ -38,7 +43,6 @@ class MovieImportController extends AbstractController
             $movies = []; // Initialize movies array
 
             // Start fetching pages
-            // Start fetching pages
             $page = 1;
             do {
                 // Make a GET request to fetch popular movies for the current page
@@ -48,7 +52,7 @@ class MovieImportController extends AbstractController
                         'page' => $page,
                     ],
                     'headers' => [
-                        'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmMmNmODVjYmUwNTFkYmE2MTc2Mzg2NjdlOTJiMTE0MiIsInN1YiI6IjY2MmU4N2FhMDNiZjg0MDEyYWVhZjc3MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.nR9FGOXwU5FKtJLtH98Za5uRsDVXYtwoKz3xBV8gfng',
+                        'Authorization' => $apiKey,
                         'accept' => 'application/json',
                     ],
                 ]);
@@ -77,7 +81,29 @@ class MovieImportController extends AbstractController
                         $movie->setTitle($movieData['original_title']);
                         $movie->setDescription($movieData['overview']);
                         $movie->setYear(isset($movieData['release_date']) ? date('Y', strtotime($movieData['release_date'])) : null);
-                        $movie->setDirector('Unknown');
+                        $directorResponse = $client->request('GET', 'https://api.themoviedb.org/3/movie/' . $movieData['id'] . '/credits', [
+                            'query' => [
+                                'language' => 'en-US',
+                            ],
+                            'headers' => [
+                                'Authorization' =>  $apiKey,
+                                'accept' => 'application/json',
+                            ],
+                        ]);
+
+                        // Decode the director JSON response
+                        $directorData = $directorResponse->toArray();
+                        $directorName = '';
+
+                        // Find the director from the crew
+                        foreach ($directorData['crew'] as $crewMember) {
+                            if ($crewMember['job'] === 'Director') {
+                                $directorName = $crewMember['name'];
+                                break;
+                            }
+                        }
+
+                        $movie->setDirector($directorName);
 
                         // Persist the movie entity
                         $entityManager->persist($movie);
