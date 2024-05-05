@@ -125,7 +125,6 @@ class MovieImportController extends AbstractController
                 // Continue fetching pages until a 400 error is encountered
             } while ($statusCode !== 400);
 
-            $entityManager->flush();
 
             // Construct the response message
             $message = "Movies fetched and persisted successfully.";
