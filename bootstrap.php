@@ -3,16 +3,10 @@
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
-use App\Entity\Movie; // Import the Movie entity
 
-
-// require_once __DIR__ . '/vendor/autoload.php';
-// require dirname(__DIR__) . '/vendor/autoload.php';
-// require_once __DIR__ . "/vendor/autoload.php";
 
 require_once "vendor/autoload.php";
 
-// require dirname(__DIR__) . '/vendor/autoload.php';
 
 
 
@@ -27,8 +21,6 @@ $config = ORMSetup::createAttributeMetadataConfiguration(
 //    isDevMode: true,
 //);
 
-// configuring the database connection
-// configuring the database connection for MySQL
 $connection = DriverManager::getConnection([
     'driver' => 'pdo_mysql',
     'dbname' => 'db',
