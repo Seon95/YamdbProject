@@ -38,8 +38,8 @@ class MovieImportController extends AbstractController
             $movies = []; // Initialize movies array
 
             // Start fetching pages
+            // Start fetching pages
             $page = 1;
-            $maxPages = 2; // Limit the pages to 2 for testing
             do {
                 // Make a GET request to fetch popular movies for the current page
                 $response = $client->request('GET', 'https://api.themoviedb.org/3/movie/popular', [
@@ -52,6 +52,16 @@ class MovieImportController extends AbstractController
                         'accept' => 'application/json',
                     ],
                 ]);
+
+                // Get the HTTP status code
+                $statusCode = $response->getStatusCode();
+
+                // Check if the status code is 400 (Bad Request)
+                if ($statusCode === 400) {
+                    // Log the error and break out of the loop
+                    $this->logger->error('Bad Request: The API request returned a 400 error.');
+                    break;
+                }
 
                 // Decode the JSON response
                 $data = $response->toArray();
@@ -72,9 +82,6 @@ class MovieImportController extends AbstractController
                         // Persist the movie entity
                         $entityManager->persist($movie);
 
-                        // Add movie data to the movies array
-                        $movies[] = $movie;
-
                         // Increment the counter
                         $counter++;
 
@@ -88,9 +95,10 @@ class MovieImportController extends AbstractController
 
                 // Increment page for the next request
                 $page++;
-            } while ($page <= min($maxPages, $data['total_pages'])); // Ensure we don't exceed 500 pages
 
-            // Flush any remaining entities
+                // Continue fetching pages until a 400 error is encountered
+            } while ($statusCode !== 400);
+
             $entityManager->flush();
 
             // Construct the response message
