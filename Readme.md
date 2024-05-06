@@ -6,7 +6,7 @@ This is a Symfony API project built with DDEV for local development using MariaD
 
 To get started with this project, follow these steps:
 
-1. **Clone the repository:** `git clone <repository-url> && cd <project-directory>`
+1. **Clone the repository:** `git clone <https://github.com/Seon95/YamdbProject> && cd <YamdbProject>`
 2. **Start the DDEV environment:** `ddev start` (If there's a port conflict, change `router_https_ports` in `config.yaml`)
 3. **Install dependencies using Composer:** `composer install`
 4. **Use the provided .env file**
