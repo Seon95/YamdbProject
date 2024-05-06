@@ -9,17 +9,17 @@
         <h1 class="mt-5 mb-4">Movie Detail</h1>
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">{{ movie.getTitle() }}</h5>
-                <p class="card-text">{{ movie.getDescription() }}</p>
-                <p class="card-text">Year: {{ movie.getYear() }}</p>
-                <p class="card-text">Director: {{ movie.getDirector() }}</p>
+                <h5 class="card-title"><strong>{{ movie.getTitle() }}</strong></h5>
+                <p class="card-text"><strong>Description:</strong> {{ movie.getDescription() }}</p>
+                <p class="card-text"><strong>Year:</strong> {{ movie.getYear() }}</p>
+                <p class="card-text"><strong>Director:</strong> {{ movie.getDirector() }}</p>
             </div>
         </div>
 
-{% set movieId = movie.id %}
-{% set pageNumber = (movieId / 10) | round(0, 'ceil') %}
+        {% set movieId = movie.id %}
+        {% set pageNumber = (movieId / 10) | round(0, 'ceil') %}
 
-<a href="{{ path('movie_list', {'page': pageNumber}) }}" class="btn btn-primary mt-3">Back to Movie List</a>
+        <a href="{{ path('movie_list', {'page': pageNumber}) }}" class="btn btn-primary mt-3">Back to Movie List</a>
     </div>
 </body>
 </html>

@@ -20,6 +20,7 @@ To get started with this project, follow these steps:
 2. Start the DDEV environment:
 
    ddev start
+   if there is some port conflict , change in config.yaml the router_https_ports
 
 3. Install dependencies using Composer:
 
@@ -46,3 +47,5 @@ To get started with this project, follow these steps:
 9. Check the movies
 
    Visit /movies in your browser to view the list of movies.
+
+10. for logger check var/dev/log (if have also some console logging)

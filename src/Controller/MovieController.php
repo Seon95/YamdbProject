@@ -35,7 +35,7 @@ class MovieController extends AbstractController
         $query = $request->query->get('query');
 
         $currentPage = $request->query->getInt('page', 1);
-        $limit = 10; // Number of items per page
+        $limit = 10;
 
         $cacheKey = 'movies_' . md5($query . '_' . $currentPage);
 
